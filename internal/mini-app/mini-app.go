@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"app-instance/internal/pkg/godb"
 	"app-instance/internal/pkg/golog"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ type miniApp struct {
 	cfg *Config
 
 	Logger *logrus.Logger
+	DB     *godb.DB
 }
 
 var (
@@ -43,6 +45,9 @@ func (m *miniApp) Init(path string) error {
 	OutputInfo("Serve address", m.cfg.Server.Addr)
 
 	m.registerLog()
+	if err := m.registerOrm(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -67,4 +72,9 @@ func (m *miniApp) registerLog() error {
 	}
 	m.Logger = golog.Mlogger
 	return nil
+}
+
+func (m *miniApp) registerOrm() error {
+	m.DB = godb.NewDatabase(m.cfg.Db)
+	return m.DB.Open()
 }
