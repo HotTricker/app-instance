@@ -7,6 +7,7 @@ import (
 type User struct {
 	ID       int    `gorm:"primary_key"`
 	Username string `gorm:"type:string;not null;default:''"`
+	Password string `gorm:"type:string;not null"`
 }
 
 func (u *User) Count(query QueryParam) (int, bool) {
@@ -63,4 +64,8 @@ func (u *User) CreateOrUpdate() error {
 		}
 	}
 	return nil
+}
+
+func (u *User) GetOne(query QueryParam) bool {
+	return GetOne(u, query)
 }

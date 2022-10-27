@@ -2,6 +2,7 @@ package model
 
 import (
 	miniapp "app-instance/internal/mini-app"
+	"errors"
 	"fmt"
 	"strings"
 	"unsafe"
@@ -58,7 +59,7 @@ func parseWhereParam(db *gorm.DB, where []WhereParam) *gorm.DB {
 		plain = append(plain, plainFmt)
 		prepare = append(prepare, w.Prepare)
 	}
-	println(strings.Join(plain, " AND "))
+	// println(strings.Join(plain, " AND "))
 	return db.Where(strings.Join(plain, " AND "), prepare...)
 }
 
@@ -66,6 +67,20 @@ func Create(model interface{}) bool {
 	db := miniapp.App.DB.DbHandler.Debug().Create(model)
 	if err := db.Error; err != nil {
 		miniapp.App.Logger.Error("database execute error: %s", err.Error())
+		return false
+	}
+	return true
+}
+
+func GetOne(model interface{}, query QueryParam) bool {
+	db := miniapp.App.DB.DbHandler.Model(model)
+	if query.Fields != "" {
+		db = db.Select(query.Fields)
+	}
+	db = parseWhereParam(db, query.Where)
+	db = db.First(model)
+	if err := db.Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		miniapp.App.Logger.Warning("database query error: %s", err.Error())
 		return false
 	}
 	return true
