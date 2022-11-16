@@ -9,17 +9,17 @@ import (
 )
 
 type DbConfig struct {
-	Unix            string
-	Host            string
-	Port            int
-	Charset         string
-	User            string
-	Pass            string
-	DbName          string
-	TablePrefix     string
-	MaxIdleConns    int
-	MaxOpenConns    int
-	ConnMaxLifeTime int
+	Unix            string `yaml:"unix"`
+	Host            string `yaml:"host"`
+	Port            int    `yaml:"port"`
+	Charset         string `yaml:"charset"`
+	User            string `yaml:"user"`
+	Pass            string `yaml:"password"`
+	DbName          string `yaml:"dbname"`
+	TablePrefix     string `yaml:"tableprefix"`
+	MaxIdleConns    int    `yaml:"max_idle_conns"`
+	MaxOpenConns    int    `yaml:"max_open_conns"`
+	ConnMaxLifeTime int    `yaml:"conn_max_life_time"`
 }
 
 type DB struct {

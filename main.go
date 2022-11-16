@@ -10,7 +10,7 @@ import (
 func main() {
 	fmt.Println("welcome")
 	miniapp.OutputInfo("Version", miniapp.Version)
-	if err := miniapp.App.Init("configs/mini-app.ini"); err != nil {
+	if err := miniapp.App.Init("configs/mini-app.yaml"); err != nil {
 		log.Fatal(err)
 	}
 	route.RegisterRoute()

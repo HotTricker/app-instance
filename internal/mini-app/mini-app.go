@@ -54,7 +54,7 @@ func (m *miniApp) Init(path string) error {
 
 func (m *miniApp) Start() error {
 	m.Logger.Infoln("App start ...")
-	return m.Gin.Run(m.cfg.Server.Addr)
+	return m.Gin.Run(":" + m.cfg.Server.Addr)
 }
 
 func OutputInfo(tag string, value interface{}) {

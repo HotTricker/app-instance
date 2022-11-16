@@ -2,74 +2,39 @@ package miniapp
 
 import (
 	"app-instance/internal/pkg/godb"
+	"io/ioutil"
 
-	"github.com/Unknwon/goconfig"
+	yaml "gopkg.in/yaml.v3"
 )
 
 type (
 	Config struct {
-		Log    *LogConfig
-		Server *ServerConfig
-		Db     *godb.DbConfig
+		Log    *LogConfig     `yaml:"log"`
+		Server *ServerConfig  `yaml:"server"`
+		Db     *godb.DbConfig `yaml:"database"`
 	}
 
 	LogConfig struct {
-		Path string
+		Path string `yaml:"path"`
 	}
 
 	ServerConfig struct {
-		Addr string
+		Addr string `yaml:"addr"`
 	}
 )
 
-var (
-	configFile *goconfig.ConfigFile
-)
-
 func loadConfig(path string) error {
-	var err error
-	configFile, err = goconfig.LoadConfigFile(path)
+	txt, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	cfg := &Config{}
+	err = yaml.Unmarshal(txt, cfg)
 	if err != nil {
 		return err
 	}
 
-	App.cfg = &Config{
-		Log: &LogConfig{
-			Path: configOrDefault("log", "path", "stdout"),
-		},
-		Server: &ServerConfig{
-			Addr: configOrDefault("serve", "addr", "8878"),
-		},
-		Db: &godb.DbConfig{
-			Unix:            configOrDefault("database", "unix", ""),
-			Host:            configOrDefault("database", "host", "localhost"),
-			Port:            configIntOrDefault("database", "port", 3306),
-			Charset:         "utf8",
-			User:            configOrDefault("database", "user", "root"),
-			Pass:            configOrDefault("database", "password", "123456"),
-			DbName:          configOrDefault("database", "dbname", "test"),
-			TablePrefix:     "",
-			MaxIdleConns:    configIntOrDefault("database", "max_idle_conns", 100),
-			MaxOpenConns:    configIntOrDefault("database", "max_open_conns", 200),
-			ConnMaxLifeTime: configIntOrDefault("database", "conn_max_life_time", 500),
-		},
-	}
+	App.cfg = cfg
 
 	return nil
-}
-
-func configOrDefault(section, key, useDefault string) string {
-	val, err := configFile.GetValue(section, key)
-	if err != nil {
-		return useDefault
-	}
-	return val
-}
-
-func configIntOrDefault(section, key string, useDefault int) int {
-	val, err := configFile.Int(section, key)
-	if err != nil {
-		return useDefault
-	}
-	return val
 }
