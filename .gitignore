@@ -15,5 +15,6 @@
 # vendor/
 
 # other
-Log
+*log
+*rdb
 __debug_bin

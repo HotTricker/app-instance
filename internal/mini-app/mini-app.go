@@ -1,22 +1,27 @@
 package miniapp
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"app-instance/internal/pkg/godb"
 	"app-instance/internal/pkg/golog"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type miniApp struct {
 	Gin *gin.Engine
 	cfg *Config
 
-	Logger *logrus.Logger
-	DB     *godb.DB
+	Logger   *logrus.Logger
+	DB       *godb.DB
+	RedisCli *redis.Client
 }
 
 var (
@@ -49,6 +54,10 @@ func (m *miniApp) Init(path string) error {
 		return err
 	}
 
+	if err := m.registerRedis(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -77,4 +86,23 @@ func (m *miniApp) registerLog() error {
 func (m *miniApp) registerOrm() error {
 	m.DB = godb.NewDatabase(m.cfg.Db)
 	return m.DB.Open()
+}
+
+func (m *miniApp) registerRedis() error {
+	m.RedisCli = redis.NewFailoverClient(&redis.FailoverOptions{
+		MasterName:    m.cfg.Redis.MasterName,
+		SentinelAddrs: m.cfg.Redis.Urls,
+	})
+	var ctx = context.Background()
+	key := "status"
+	value := "start"
+	ttl := 24 * time.Hour
+	err := m.RedisCli.Set(ctx, key, value, ttl).Err()
+	if err != nil {
+		return err
+	} else {
+		m.Logger.Infoln("redis start")
+	}
+
+	return nil
 }

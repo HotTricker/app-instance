@@ -12,6 +12,7 @@ type (
 		Log    *LogConfig     `yaml:"log"`
 		Server *ServerConfig  `yaml:"server"`
 		Db     *godb.DbConfig `yaml:"database"`
+		Redis  *RedisConfig   `yaml:"redis"`
 	}
 
 	LogConfig struct {
@@ -20,6 +21,11 @@ type (
 
 	ServerConfig struct {
 		Addr string `yaml:"addr"`
+	}
+
+	RedisConfig struct {
+		MasterName string   `yaml:"masterName"`
+		Urls       []string `yaml:"url"`
 	}
 )
 

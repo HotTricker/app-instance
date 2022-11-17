@@ -9,8 +9,8 @@ server:
 log:
   # 日志输出路径
   #path = stdout - 打印到标准输出
-  #path = ./Log/test.log
-  path: ./Log/test.log
+  #path = ./log/test.log
+  path: ./log/test.log
 
 database:
   # 数据库连接信息
@@ -24,3 +24,15 @@ database:
   max_idle_conns: 100
   max_open_conns: 200
   conn_max_life_time: 500
+
+redis:
+  #模式 哨兵sentinel 集群cluster 单机 standalone
+  mode: sentinel
+  #Redis哨兵模式
+  database: 0        #选择redis的第二个数据库
+  password: 123456   #redis密码
+  masterName: mymaster #哨兵的名字 #下面是所有哨兵集群节点
+  url: 
+    - 127.0.0.1:26382
+    - 127.0.0.1:26383
+    - 127.0.0.1:26384
