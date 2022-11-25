@@ -12,5 +12,6 @@ func RegisterRoute() {
 	{
 		api.POST(reqApi.USER_ADD, system.UserAdd)
 		api.POST(reqApi.LOGIN, system.Login)
+		api.POST(reqApi.PUBLISH, system.Publish)
 	}
 }
